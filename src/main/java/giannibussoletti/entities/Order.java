@@ -1,5 +1,6 @@
 package giannibussoletti.entities;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
@@ -13,6 +14,7 @@ public class Order {
     private final Costumer costumer;
 
     Random random = new Random();
+    DecimalFormat df = new DecimalFormat("#.##");
 
     public Order(String status, LocalDate orderDate, LocalDate deliveryDate, List<Product> products, Costumer costumer) {
         this.id = random.nextLong(1000000000000000000L, 9223372036854775807L);
@@ -22,6 +24,12 @@ public class Order {
         this.products = products;
         this.costumer = costumer;
     }
+
+    public double calculateTotal() {
+        double total = products.stream().mapToDouble(Product::getPrice).sum();
+        return Math.round(total * 100.0) / 100.0;
+    }
+//        return Double.parseDouble(df.format(this.products.stream().mapToDouble(Product::getPrice).sum()));    }
 
     public LocalDate getOrderDate() {
         return orderDate;
@@ -46,7 +54,8 @@ public class Order {
                 "status: " + status + "\n" +
                 "orderDate: " + orderDate + "\n" +
                 "deliveryDate: " + deliveryDate + "\n" +
-                "\nCart:" + products + "\n\n" +
-                "costumer: \n" + costumer;
+                "\nCart:" + products + "\n"
+//                + "costumer: " + costumer
+                ;
     }
 }
