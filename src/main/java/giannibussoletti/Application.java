@@ -56,8 +56,14 @@ public class Application {
         Map<Costumer, Double> calculateTotalAll = orders.stream().collect(Collectors.groupingBy(Order::getCostumer, Collectors.summingDouble(Order::calculateTotal)));
         calculateTotalAll.forEach((costumer, aDouble) -> System.out.println(costumer + "Totale: " + aDouble));
 
+        // Questa versione più lunga non usa il calculateTotal, ma alla fine prendendo lo stream della product list si ottiene lo stesso problema
+        Map<Costumer, Double> calculateTotalAllNoMethod = orders.stream().collect(Collectors.groupingBy(Order::getCostumer, Collectors.summingDouble(order -> order.getProductsList().stream().mapToDouble(Product::getPrice).sum())));
+
+
         List<Product> maxCostProducts = cart4.stream().filter(product -> product.getPrice() > 99).sorted(Comparator.comparing(Product::getPrice).reversed()).toList();
-        maxCostProducts.forEach(System.out::println);
+        //Questo versione prendere i prodotti dal costo più alto a prescindere da quanto cosa ogni prodotto
+        List<Product> maxCostProductsWithLimit = cart4.stream().limit(3).sorted(Comparator.comparing(Product::getPrice).reversed()).toList();
+        maxCostProductsWithLimit.forEach(System.out::println);
 
         OptionalDouble averageTotal = orders.stream().mapToDouble(Order::calculateTotal).average();
         if (averageTotal.isPresent())
@@ -65,7 +71,7 @@ public class Application {
         else System.out.println("Non è stato possibile fare la media");
 
         Map<String, Double> totalCategoryPrice = cart4.stream().collect(Collectors.groupingBy(Product::getCategory, Collectors.summingDouble(Product::getPrice)));
-        totalCategoryPrice.forEach((product, totalPriceCat) -> System.out.println(product + totalPriceCat));
+        totalCategoryPrice.forEach((product, totalPriceCat) -> System.out.println("I libri della categoria: " + product + ", hanno un valore totale di: " + totalPriceCat));
 
     }
 }
